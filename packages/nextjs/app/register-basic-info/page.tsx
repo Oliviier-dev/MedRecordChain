@@ -33,7 +33,7 @@ const RegisterBasicInfoPage: React.FC = () => {
       });
 
       console.log("Basic info registered!");
-      router.push("/register-health-details"); // Move to the health details page
+      router.push("/register-health-details");
     } catch (e) {
       console.error("Error during registration:", e);
       setErrorMessage("An error occurred during registration. Please try again.");

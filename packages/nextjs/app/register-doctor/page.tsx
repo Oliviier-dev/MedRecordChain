@@ -21,7 +21,7 @@ const RegisterDoctorPage: React.FC = () => {
         args: [doctorInfo.name, doctorInfo.specialization],
       });
       console.log("Doctor registered successfully!");
-      router.push("/"); // Redirect back to home or dashboard
+      router.push("/doc-dashboard");
     } catch (e) {
       console.error("Error registering doctor:", e);
     }

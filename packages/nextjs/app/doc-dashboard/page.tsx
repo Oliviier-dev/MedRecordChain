@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { FiUser, FiSettings, FiHelpCircle, FiLogOut, FiClock, FiSearch, FiBarChart2, FiFileText, FiUsers } from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import PatientModal from "../../components/ui/PatientModal";
+import AddMedicalRecordModal from "../../components/ui/AddMedicalRecordModal";
 
 const DoctorDashboard: React.FC = () => {
   const { address: doctorAddress } = useAccount();
@@ -14,6 +17,19 @@ const DoctorDashboard: React.FC = () => {
     { patientAddress: string; name: string; age: number; phone: string; email: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
+  const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
+
+  const openPatientModal = (patient) => {
+    setSelectedPatient(patient);
+    setIsPatientModalOpen(true);
+  };
+
+  const openAddRecordModal = (patient) => {
+    setSelectedPatient(patient);
+    setIsAddRecordModalOpen(true);
+  };
 
   // Fetch doctor's own details
   const { data: doctorDetailsData } = useScaffoldReadContract({
@@ -57,57 +73,142 @@ const DoctorDashboard: React.FC = () => {
   if (loading) return <p className="text-center mt-20 text-indigo-600 font-semibold">Loading...</p>;
 
   return (
-    <div className="p-8 bg-gradient-to-r from-indigo-50 to-indigo-100 min-h-screen flex items-center justify-center">
-      <div className="max-w-2xl w-full bg-white p-8 shadow-2xl rounded-lg border border-gray-200">
-        <h1 className="text-3xl font-extrabold text-indigo-600 text-center mb-6">Doctor Dashboard</h1>
+    <div className="flex min-h-screen bg-gradient-to-r from-indigo-50 to-indigo-100">
+      {/* Sidebar */}
+      <aside className="w-1/4 bg-white shadow-md p-6 flex flex-col items-center border-r border-gray-200">
+        {/* Profile Picture */}
+        <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+          <span className="text-indigo-600">
+            <FiUser size={48} />
+          </span>
+        </div>
 
-        {/* Doctor's Own Info */}
-        {doctorInfo.name ? (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-2">Doctor Information</h2>
-            <div className="space-y-2">
-              <p className="text-gray-600">
-                <span className="font-semibold text-indigo-500">Name:</span> {doctorInfo.name}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-semibold text-indigo-500">Specialization:</span> {doctorInfo.specialization}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-center text-gray-500 italic">No doctor information available.</p>
+        {/* Doctor's Info */}
+        {doctorInfo.name && (
+          <>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">{doctorInfo.name}</h2>
+            <p className="text-gray-500">{doctorInfo.specialization}</p>
+          </>
         )}
 
-        {/* Accessible Patients */}
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-2">Patients you have access for:</h2>
-          {accessiblePatients.length > 0 ? (
-            <ul className="space-y-4">
-              {accessiblePatients.map((patient, index) => (
-                <li key={index} className="p-4 border rounded-md text-gray-600 bg-indigo-50">
-                  <p>
-                    <span className="font-semibold">Name:</span> {patient.name}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Age:</span> {patient.age}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Phone:</span> {patient.phone}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Email:</span> {patient.email}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Address:</span> {patient.patientAddress}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-gray-500 italic">No patients have granted you access.</p>
-          )}
+        {/* Quick Stats */}
+        <div className="w-full mt-6 text-left border-t pt-4">
+          <p className="text-gray-600 mb-1 flex items-center">
+            <span className="mr-2 text-gray-400">
+              <FiClock />
+            </span>
+            <span>Last Activity:</span> <span className="text-gray-800 ml-1">3 hrs ago</span>
+          </p>
+          <p className="text-gray-600 flex items-center">
+            <span>Patients Accessible:</span> <span className="text-indigo-600 font-bold ml-1">{accessiblePatients.length}</span>
+          </p>
         </div>
-      </div>
+
+        {/* Search Bar */}
+        <div className="w-full mt-6 flex justify-center">
+          <div className="flex items-center border border-gray-300 rounded-md overflow-hidden max-w-md w-full">
+            <span className="text-gray-400 pl-3">
+              <FiSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Search patients"
+              className="w-full p-2 text-gray-700 focus:outline-none bg-white"
+            />
+          </div>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="w-full mt-8 space-y-2">
+          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
+            <span className="mr-2">
+              <FiUsers />
+            </span>
+            Patient List
+          </button>
+          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
+            <span className="mr-2">
+              <FiBarChart2 />
+            </span>
+            Statistics
+          </button>
+          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
+            <span className="mr-2">
+              <FiFileText />
+            </span>
+            Reports
+          </button>
+          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
+            <span className="mr-2">
+              <FiSettings />
+            </span>
+            Settings
+          </button>
+          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
+            <span className="mr-2">
+              <FiHelpCircle />
+            </span>
+            Help & Support
+          </button>
+          <button className="w-full flex items-center justify-start p-2 text-red-600 hover:bg-red-50 rounded-md">
+            <span className="mr-2">
+              <FiLogOut />
+            </span>
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="w-3/4 p-8 overflow-y-auto">
+        <h2 className="text-2xl font-semibold text-indigo-600 mb-6">Accessible Patients</h2>
+        {accessiblePatients.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {accessiblePatients.map((patient, index) => (
+              <div key={index} className="p-6 border rounded-lg shadow-md bg-white hover:shadow-lg transition w-full">
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">{patient.name}</h3>
+                <p className="text-gray-600">
+                  <span className="font-medium">Email:</span> {patient.email}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-medium">Address:</span>
+                  <span className="block overflow-hidden text-ellipsis whitespace-normal">{patient.patientAddress}</span>
+                </p>
+                <div className="mt-4 flex space-x-2">
+                  <button
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex-1"
+                    onClick={() => openPatientModal(patient)}
+                  >
+                    View Patient
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex-1"
+                    onClick={() => openAddRecordModal(patient)}
+                  >
+                    Add Medical History
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div> 
+        ) : (
+          <p className="text-center text-gray-500 italic">No patients have granted you access yet.</p>
+        )}
+      </main>
+
+      {/* Modals */}
+      {isPatientModalOpen && (
+        <PatientModal
+          patient={selectedPatient}
+          onClose={() => setIsPatientModalOpen(false)}
+        />
+      )}
+      {isAddRecordModalOpen && (
+        <AddMedicalRecordModal
+        patientAddress={selectedPatient.patientAddress}
+          onClose={() => setIsAddRecordModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

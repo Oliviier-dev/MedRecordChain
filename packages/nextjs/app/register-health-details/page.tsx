@@ -8,7 +8,6 @@ const RegisterHealthDetailsPage: React.FC = () => {
   const router = useRouter();
   const [healthDetails, setHealthDetails] = useState({
     allergies: "",
-    medicalHistory: "",
     insurance: "",
   });
   const { writeContractAsync: completeRegistrationAsync } = useScaffoldWriteContract("PatientRegistry");
@@ -17,7 +16,7 @@ const RegisterHealthDetailsPage: React.FC = () => {
     try {
       await completeRegistrationAsync({
         functionName: "completeRegistration",
-        args: [[healthDetails.medicalHistory, healthDetails.allergies, healthDetails.insurance]],
+        args: [healthDetails.allergies, healthDetails.insurance],
       });
       console.log("Health details updated!");
       router.push("/dashboard");
@@ -42,7 +41,7 @@ const RegisterHealthDetailsPage: React.FC = () => {
       </div>
       <div className="flex items-center justify-center p-8 bg-gray-100">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Additional Health Details</h1>
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Complete Health Details</h1>
           <form className="space-y-4" onSubmit={e => e.preventDefault()}>
             <div>
               <label htmlFor="allergies" className="block text-lg font-medium text-gray-700">
@@ -56,20 +55,6 @@ const RegisterHealthDetailsPage: React.FC = () => {
                 onChange={handleChange}
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800"
                 placeholder="E.g., penicillin, nuts"
-              />
-            </div>
-            <div>
-              <label htmlFor="medicalHistory" className="block text-lg font-medium text-gray-700">
-                Medical History
-              </label>
-              <input
-                type="text"
-                id="medicalHistory"
-                name="medicalHistory"
-                value={healthDetails.medicalHistory}
-                onChange={handleChange}
-                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800"
-                placeholder="E.g., diabetes, hypertension"
               />
             </div>
             <div>

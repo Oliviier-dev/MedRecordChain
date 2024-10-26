@@ -3,12 +3,34 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract PatientRegistry {
+    struct MedicalRecord {
+        string recordType;
+        string description;
+        string date;
+        string doctorName;
+    }
+
+    struct MedicalRecordData {
+        string recordType;
+        string description;
+        string date;
+        string doctorName;
+    }
+
+    struct PersonalHealthDetails {
+        string allergies;
+        string insurance;
+    }
     struct Patient {
         string name;
         uint256 age;
         string phone;
         string email;
-        string[] medicalHistory;
+        mapping(uint256 => MedicalRecord) medicalHistory;
+        uint256 medicalHistorySize;
+        PersonalHealthDetails personalDetails;
+        string allergies;
+        string insurance;
         bool isRegistered;
     }
     
@@ -44,7 +66,7 @@ contract PatientRegistry {
     event HealthDetailsUpdated(address patientAddress, string phone, string email);
     event AccessGranted(address patientAddress, address doctorAddress);
     event AccessRevoked(address patientAddress, address doctorAddress);
-    event MedicalRecordAdded(address indexed patientAddress, string description);
+    event MedicalRecordAdded(address indexed patientAddress, string recordType, string description);
 
     // Register the patient with basic info (step 1)
     function registerPatient(
@@ -55,17 +77,13 @@ contract PatientRegistry {
     ) public {
         require(!patients[msg.sender].isRegistered, "Patient is already registered.");
 
-        // Initialize an empty array for medical history
-        string[] memory initialHistory;
-
-        patients[msg.sender] = Patient({
-            name: _name,
-            age: _age,
-            phone: _phone,
-            email: _email,
-            medicalHistory: initialHistory,
-            isRegistered: true
-        });
+        Patient storage newPatient = patients[msg.sender];
+        newPatient.name = _name;
+        newPatient.age = _age;
+        newPatient.phone = _phone;
+        newPatient.email = _email;
+        newPatient.medicalHistorySize = 0;
+        newPatient.isRegistered = true;
 
         emit PatientRegistered(msg.sender, _name, _age);
     }
@@ -84,14 +102,12 @@ contract PatientRegistry {
     }
 
     // Complete registration by adding medical history (step 2)
-    function completeRegistration(string[] memory _medicalHistory) public {
-        require(patients[msg.sender].isRegistered, "Patient has not registered basic info.");
-
-        for (uint i = 0; i < _medicalHistory.length; i++) {
-            patients[msg.sender].medicalHistory.push(_medicalHistory[i]);
-        }
-
-        emit HealthDetailsUpdated(msg.sender, patients[msg.sender].phone, patients[msg.sender].email);
+    function completeRegistration(string memory _allergies, string memory _insurance) public {
+        require(patients[msg.sender].isRegistered, "Patient must register basic info first.");
+        Patient storage patient = patients[msg.sender];
+        patient.allergies = _allergies;
+        patient.insurance = _insurance;
+        emit HealthDetailsUpdated(msg.sender, _allergies, _insurance);
     }
 
     // Check if the specified address is registered as a patient
@@ -106,14 +122,36 @@ contract PatientRegistry {
         return registeredStatus;
     }
 
-    // Add a new entry to the medical history
-    function addMedicalRecord(string memory _description) public {
-        require(patients[msg.sender].isRegistered, "Patient is not registered.");
+    // Function to add a medical record for a patient by an authorized doctor
+    function addMedicalRecord(
+        address patientAddress,
+        string memory _recordType,
+        string memory _description,
+        string memory _date,
+        string memory _doctorName
+    ) public {
+        // Ensure the patient is registered
+        require(patients[patientAddress].isRegistered, "Patient is not registered.");
 
-        // Add a new entry to the patient's medical history
-        patients[msg.sender].medicalHistory.push(_description);
+        // Ensure the doctor is registered and has permission
+        require(doctors[msg.sender].isRegistered, "You must be a registered doctor to add records.");
+        require(doctorPermissions[patientAddress][msg.sender], "Doctor does not have permission to add records for this patient.");
 
-        emit MedicalRecordAdded(msg.sender, _description);
+        // Access the patient's storage and add a new medical record
+        Patient storage patient = patients[patientAddress];
+        uint256 recordIndex = patient.medicalHistorySize;
+
+        // Add the new medical record
+        patient.medicalHistory[recordIndex] = MedicalRecord({
+            recordType: _recordType,
+            description: _description,
+            date: _date,
+            doctorName: _doctorName
+        });
+        patient.medicalHistorySize++; // Update the size of the medical history
+
+        // Emit an event for the new medical record
+        emit MedicalRecordAdded(patientAddress, _recordType, _description);
     }
 
     // Grant access to a doctor and add to the list
@@ -177,10 +215,16 @@ contract PatientRegistry {
     }
 
     // Get basic patient info for the caller
-    function getPatientInfo(address patientAddress) public view returns (string memory, uint256, string memory, string memory) {
+    function getPatientInfo(address patientAddress) public view returns (
+        string memory name,
+        uint256 age,
+        string memory phone,
+        string memory email
+    ) {
         require(patients[patientAddress].isRegistered, "Patient is not registered.");
 
-        Patient memory patient = patients[patientAddress];
+        // Use storage to directly access stored data
+        Patient storage patient = patients[patientAddress];
         return (patient.name, patient.age, patient.phone, patient.email);
     }
 
@@ -196,13 +240,33 @@ contract PatientRegistry {
         require(doctors[doctorAddress].isRegistered, "Doctor is not registered.");
 
         address[] memory patientAddresses = accessiblePatients[doctorAddress];
-        PatientDetails[] memory details = new PatientDetails[](patientAddresses.length);
+        uint accessibleCount = 0;
 
+        // First pass: count accessible patients
+        for (uint i = 0; i < patientAddresses.length; i++) {
+            if (doctorPermissions[patientAddresses[i]][doctorAddress]) {
+                accessibleCount++;
+            }
+        }
+
+        // Initialize the array with the exact accessible count
+        PatientDetails[] memory details = new PatientDetails[](accessibleCount);
+        uint index = 0;
+
+        // Second pass: populate details with accessible patients
         for (uint i = 0; i < patientAddresses.length; i++) {
             address patientAddr = patientAddresses[i];
             if (doctorPermissions[patientAddr][doctorAddress]) {
-                Patient memory patient = patients[patientAddr];
-                details[i] = PatientDetails(patientAddr, patient.name, patient.age, patient.phone, patient.email);
+                // Access each field of the Patient struct directly from storage
+                Patient storage patient = patients[patientAddr];
+                details[index] = PatientDetails({
+                    patientAddress: patientAddr,
+                    name: patient.name,
+                    age: patient.age,
+                    phone: patient.phone,
+                    email: patient.email
+                });
+                index++;
             }
         }
 
@@ -210,19 +274,63 @@ contract PatientRegistry {
     }
 
     // Function to get the medical history of a specified address
-    function getPatientMedicalHistory(address patientAddress) public view returns (string[] memory) {
+    function getPatientMedicalHistory(address patientAddress)public view
+        returns (MedicalRecordData[] memory)
+    {
         require(patients[patientAddress].isRegistered, "Patient is not registered.");
 
-        return patients[patientAddress].medicalHistory;
+        uint256 historyLength = patients[patientAddress].medicalHistorySize; // Use medicalHistorySize instead of length
+        MedicalRecordData[] memory historyData = new MedicalRecordData[](historyLength);
+
+        for (uint256 i = 0; i < historyLength; i++) {
+            MedicalRecord storage record = patients[patientAddress].medicalHistory[i];
+            historyData[i] = MedicalRecordData(
+                record.recordType,
+                record.description,
+                record.date,
+                record.doctorName
+            );
+        }
+
+        return historyData;
+    }
+
+     // Function to retrieve personal health details (allergies and insurance)
+    function getPersonalHealthDetails(address patientAddress) public view returns (string memory, string memory) {
+        require(patients[patientAddress].isRegistered, "Patient is not registered.");
+        
+        Patient storage patient = patients[patientAddress];
+        return (patient.allergies, patient.insurance);
     }
 
     // Get the entire medical history of a patient if access is granted
-    function getMedicalHistory(address _patient) public view returns (string[] memory) {
+    function getMedicalHistory(address _patient)public view
+        returns (
+            string[] memory recordTypes,
+            string[] memory descriptions,
+            string[] memory dates,
+            string[] memory doctorNames
+        )
+    {
         require(
             msg.sender == _patient || doctorPermissions[_patient][msg.sender],
             "Not authorized to access this patient's medical history."
         );
 
-        return patients[_patient].medicalHistory;
+        uint256 historyLength = patients[_patient].medicalHistorySize; // Use medicalHistorySize instead of length
+
+        // Initialize arrays to store each field from MedicalRecord
+        recordTypes = new string[](historyLength);
+        descriptions = new string[](historyLength);
+        dates = new string[](historyLength);
+        doctorNames = new string[](historyLength);
+
+        for (uint256 i = 0; i < historyLength; i++) {
+            MedicalRecord storage record = patients[_patient].medicalHistory[i];
+            recordTypes[i] = record.recordType;
+            descriptions[i] = record.description;
+            dates[i] = record.date;
+            doctorNames[i] = record.doctorName;
+        }
     }
 }

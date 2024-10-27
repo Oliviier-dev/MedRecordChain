@@ -3,7 +3,12 @@
 import React, { useState } from "react";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-const AddMedicalRecordModal = ({ patientAddress, onClose }) => {
+interface AddMedicalRecordModalProps {
+  patientAddress: string;
+  onClose: () => void;
+}
+
+const AddMedicalRecordModal: React.FC<AddMedicalRecordModalProps> = ({ patientAddress, onClose }) => {
   const [recordType, setRecordType] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -52,7 +57,7 @@ const AddMedicalRecordModal = ({ patientAddress, onClose }) => {
               type="text"
               placeholder="Record Type"
               value={recordType}
-              onChange={(e) => setRecordType(e.target.value)}
+              onChange={e => setRecordType(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800"
             />
           </div>
@@ -61,7 +66,7 @@ const AddMedicalRecordModal = ({ patientAddress, onClose }) => {
             <textarea
               placeholder="Description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800 resize-none h-24"
             />
           </div>
@@ -71,7 +76,7 @@ const AddMedicalRecordModal = ({ patientAddress, onClose }) => {
               type="date"
               placeholder="Date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={e => setDate(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800"
             />
           </div>
@@ -81,7 +86,7 @@ const AddMedicalRecordModal = ({ patientAddress, onClose }) => {
               type="text"
               placeholder="Doctor Name"
               value={doctorName}
-              onChange={(e) => setDoctorName(e.target.value)}
+              onChange={e => setDoctorName(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none bg-white text-gray-800"
             />
           </div>

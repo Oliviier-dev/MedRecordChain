@@ -2,11 +2,29 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiUser, FiSettings, FiHelpCircle, FiLogOut, FiClock, FiSearch, FiBarChart2, FiFileText, FiUsers } from "react-icons/fi";
+import AddMedicalRecordModal from "../../components/ui/AddMedicalRecordModal";
+import PatientModal from "../../components/ui/PatientModal";
+import {
+  FiBarChart2,
+  FiClock,
+  FiFileText,
+  FiHelpCircle,
+  FiLogOut,
+  FiSearch,
+  FiSettings,
+  FiUser,
+  FiUsers,
+} from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
-import PatientModal from "../../components/ui/PatientModal";
-import AddMedicalRecordModal from "../../components/ui/AddMedicalRecordModal";
+
+interface Patient {
+  patientAddress: string;
+  name: string;
+  age: number;
+  phone: string;
+  email: string;
+}
 
 const DoctorDashboard: React.FC = () => {
   const { address: doctorAddress } = useAccount();
@@ -15,20 +33,18 @@ const DoctorDashboard: React.FC = () => {
     name: "",
     specialization: "",
   });
-  const [accessiblePatients, setAccessiblePatients] = useState<
-    { patientAddress: string; name: string; age: number; phone: string; email: string }[]
-  >([]);
+  const [accessiblePatients, setAccessiblePatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
 
-  const openPatientModal = (patient) => {
+  const openPatientModal = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsPatientModalOpen(true);
   };
 
-  const openAddRecordModal = (patient) => {
+  const openAddRecordModal = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsAddRecordModalOpen(true);
   };
@@ -102,7 +118,8 @@ const DoctorDashboard: React.FC = () => {
             <span>Last Activity:</span> <span className="text-gray-800 ml-1">3 hrs ago</span>
           </p>
           <p className="text-gray-600 flex items-center">
-            <span>Patients Accessible:</span> <span className="text-indigo-600 font-bold ml-1">{accessiblePatients.length}</span>
+            <span>Patients Accessible:</span>{" "}
+            <span className="text-indigo-600 font-bold ml-1">{accessiblePatients.length}</span>
           </p>
         </div>
 
@@ -131,7 +148,7 @@ const DoctorDashboard: React.FC = () => {
           </button>
           <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
             <span className="mr-2">
-            <FiUsers />
+              <FiUsers />
             </span>
             Statistics
           </button>
@@ -175,7 +192,9 @@ const DoctorDashboard: React.FC = () => {
                 </p>
                 <p className="text-gray-600">
                   <span className="font-medium">Address:</span>
-                  <span className="block overflow-hidden text-ellipsis whitespace-normal">{patient.patientAddress}</span>
+                  <span className="block overflow-hidden text-ellipsis whitespace-normal">
+                    {patient.patientAddress}
+                  </span>
                 </p>
                 <div className="mt-4 flex space-x-2">
                   <button
@@ -193,22 +212,20 @@ const DoctorDashboard: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div> 
+          </div>
         ) : (
           <p className="text-center text-gray-500 italic">No patients have granted you access yet.</p>
         )}
       </main>
 
       {/* Modals */}
-      {isPatientModalOpen && (
-        <PatientModal
-          patient={selectedPatient}
-          onClose={() => setIsPatientModalOpen(false)}
-        />
+      {isPatientModalOpen && selectedPatient && (
+        <PatientModal patient={selectedPatient} onClose={() => setIsPatientModalOpen(false)} />
       )}
-      {isAddRecordModalOpen && (
+
+      {isAddRecordModalOpen && selectedPatient && (
         <AddMedicalRecordModal
-        patientAddress={selectedPatient.patientAddress}
+          patientAddress={selectedPatient.patientAddress}
           onClose={() => setIsAddRecordModalOpen(false)}
         />
       )}

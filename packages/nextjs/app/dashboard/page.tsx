@@ -2,9 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  FiBarChart2,
+  FiClock,
+  FiFileText,
+  FiHelpCircle,
+  FiLogOut,
+  FiSearch,
+  FiSettings,
+  FiUser,
+  FiUsers,
+} from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { FiUser, FiSettings, FiHelpCircle, FiLogOut, FiClock, FiSearch, FiBarChart2, FiFileText, FiUsers } from "react-icons/fi";
 
 interface MedicalRecord {
   recordType: string;
@@ -133,7 +143,7 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleNavigateToAppointments = () => {
-    router.push('/appointments');
+    router.push("/appointments");
   };
 
   const handleBookAppointment = async () => {
@@ -141,26 +151,25 @@ const DashboardPage: React.FC = () => {
       setErrorMessage("Please fill in all required fields.");
       return;
     }
-  
+
     try {
       // Convert date to Unix timestamp in seconds and then to BigInt
       const dateTimeUnix = BigInt(Math.floor(new Date(appointmentDetails.date).getTime() / 1000));
-  
+
       await bookAppointmentAsync({
         functionName: "requestAppointment",
         args: [appointmentDetails.doctorAddress, dateTimeUnix, appointmentDetails.reason],
       });
       console.log("Appointment booked successfully!");
       setErrorMessage(""); // Clear error message
-  
+
       // Reset appointment fields
       setAppointmentDetails({ date: "", reason: "", doctorAddress: "" });
     } catch (error) {
       console.error("Error booking appointment:", error);
       setErrorMessage("Failed to book appointment. Please try again.");
     }
-  };  
-  
+  };
 
   if (loading) return <p className="text-center mt-20 text-indigo-600 font-semibold">Loading...</p>;
 
@@ -272,14 +281,11 @@ const DashboardPage: React.FC = () => {
         {/* Medical History */}
         <section className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Medical History</h2>
-          {medicalHistory.length > 0 && medicalHistory.some(record => 
-            record.recordType || record.description || record.date || record.doctorName
-          ) ? (
+          {medicalHistory.length > 0 &&
+          medicalHistory.some(record => record.recordType || record.description || record.date || record.doctorName) ? (
             <ul className="space-y-4">
               {medicalHistory
-                .filter(record => 
-                  record.recordType || record.description || record.date || record.doctorName
-                )
+                .filter(record => record.recordType || record.description || record.date || record.doctorName)
                 .map((record, index) => (
                   <li key={index} className="p-4 border rounded-lg bg-gray-50">
                     <p className="text-gray-800">
@@ -308,11 +314,11 @@ const DashboardPage: React.FC = () => {
           <input
             type="text"
             value={doctorAddress}
-            onChange={(e) => setDoctorAddress(e.target.value)}
+            onChange={e => setDoctorAddress(e.target.value)}
             placeholder="Enter doctor's address"
             className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:ring-indigo-500 bg-gray-50 text-gray-700"
           />
-          
+
           {/* Buttons Row */}
           <div className="flex space-x-4 mb-4">
             <button
@@ -328,10 +334,10 @@ const DashboardPage: React.FC = () => {
               Revoke Access
             </button>
             <button
-              onClick={() => setShowDoctorsList((prevState) => !prevState)}
+              onClick={() => setShowDoctorsList(prevState => !prevState)}
               className="flex-1 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition"
             >
-              {showDoctorsList ? 'Hide Granted Doctors' : 'View Granted Doctors'}
+              {showDoctorsList ? "Hide Granted Doctors" : "View Granted Doctors"}
             </button>
           </div>
 
@@ -341,8 +347,12 @@ const DashboardPage: React.FC = () => {
               {grantedDoctors.length > 0 ? (
                 grantedDoctors.map((doctor, index) => (
                   <li key={index} className="text-gray-700">
-                    <p><strong>Doctor:</strong> {doctor.name} ({doctor.specialization})</p>
-                    <p><strong>Address:</strong> {doctor.doctorAddress}</p>
+                    <p>
+                      <strong>Doctor:</strong> {doctor.name} ({doctor.specialization})
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {doctor.doctorAddress}
+                    </p>
                   </li>
                 ))
               ) : (
@@ -356,24 +366,24 @@ const DashboardPage: React.FC = () => {
         <section className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Book an Appointment</h2>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={e => e.preventDefault()}>
             <input
               type="text"
               placeholder="Doctor's Address"
               value={appointmentDetails.doctorAddress}
-              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, doctorAddress: e.target.value })}
+              onChange={e => setAppointmentDetails({ ...appointmentDetails, doctorAddress: e.target.value })}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
             />
             <input
               type="date"
               value={appointmentDetails.date}
-              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, date: e.target.value })}
+              onChange={e => setAppointmentDetails({ ...appointmentDetails, date: e.target.value })}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
             />
             <textarea
               placeholder="Reason for Appointment"
               value={appointmentDetails.reason}
-              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, reason: e.target.value })}
+              onChange={e => setAppointmentDetails({ ...appointmentDetails, reason: e.target.value })}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
             ></textarea>
             <button
@@ -386,7 +396,6 @@ const DashboardPage: React.FC = () => {
         </section>
       </main>
     </div>
-
   );
 };
 

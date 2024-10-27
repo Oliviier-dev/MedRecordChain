@@ -2,16 +2,42 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiUser, FiClock, FiSearch, FiUsers, FiBarChart2, FiFileText, FiSettings, FiHelpCircle, FiLogOut } from "react-icons/fi";
+import {
+  FiBarChart2,
+  FiClock,
+  FiFileText,
+  FiHelpCircle,
+  FiLogOut,
+  FiSearch,
+  FiSettings,
+  FiUser,
+  FiUsers,
+} from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+interface Doctor {
+  doctorAddress: string;
+  name: string;
+  specialization: string;
+}
+
+interface MappedAppointment {
+  id: bigint;
+  patient: string;
+  doctor: string;
+  date: bigint;
+  reason: string;
+  status: number;
+  doctorName: string;
+}
 
 const AppointmentsPage = () => {
   const { address: userAddress } = useAccount();
   const router = useRouter();
   const [patientInfo, setPatientInfo] = useState({ name: "", age: 0, email: "", allergies: "", insurance: "" });
-  const [grantedDoctors, setGrantedDoctors] = useState([]);
-  const [appointments, setAppointments] = useState([]);
+  const [grantedDoctors, setGrantedDoctors] = useState<Doctor[]>([]);
+  const [appointments, setAppointments] = useState<MappedAppointment[]>([]);
 
   const { data: patientData } = useScaffoldReadContract({
     contractName: "PatientRegistry",
@@ -54,10 +80,10 @@ const AppointmentsPage = () => {
       }));
     }
 
-    if (grantedDoctorsData) setGrantedDoctors(grantedDoctorsData);
+    if (grantedDoctorsData) setGrantedDoctors([...grantedDoctorsData]);
     if (appointmentsData) {
-      const mappedAppointments = appointmentsData.map(appointment => {
-        const doctor = grantedDoctorsData.find(doc => doc.doctorAddress === appointment.doctor);
+      const mappedAppointments: MappedAppointment[] = appointmentsData.map(appointment => {
+        const doctor = grantedDoctorsData?.find(doc => doc.doctorAddress === appointment.doctor);
         return {
           ...appointment,
           doctorName: doctor ? doctor.name : appointment.doctor,
@@ -72,24 +98,42 @@ const AppointmentsPage = () => {
     <div className="min-h-screen flex bg-gray-100">
       <aside className="w-1/4 bg-white shadow-md p-6 flex flex-col items-center border-r border-gray-200">
         <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-          <span className="text-indigo-600"><FiUser size={48} /></span>
+          <span className="text-indigo-600">
+            <FiUser size={48} />
+          </span>
         </div>
         <h2 className="text-xl font-semibold text-gray-700 mb-2">{patientInfo.name || "Patient"}</h2>
         <p className="text-gray-500">{patientInfo.email}</p>
         <div className="w-full mt-6 text-left border-t pt-4">
           <p className="text-gray-600 mb-1 flex items-center">
-            <span className="mr-2 text-gray-400"><FiClock /></span>
+            <span className="mr-2 text-gray-400">
+              <FiClock />
+            </span>
             Last Activity: <span className="text-gray-800 ml-1">3 hrs ago</span>
           </p>
-          <p className="text-gray-600 flex items-center">Age: <span className="text-indigo-600 font-bold ml-1">{patientInfo.age}</span></p>
-          <p className="text-gray-600 flex items-center">Allergies: <span className="text-gray-800 ml-1">{patientInfo.allergies || "N/A"}</span></p>
-          <p className="text-gray-600 flex items-center">Insurance: <span className="text-gray-800 ml-1">{patientInfo.insurance || "N/A"}</span></p>
-          <p className="text-gray-600 flex items-center">Accessible Doctors: <span className="text-indigo-600 font-bold ml-1">{grantedDoctors.length}</span></p>
+          <p className="text-gray-600 flex items-center">
+            Age: <span className="text-indigo-600 font-bold ml-1">{patientInfo.age}</span>
+          </p>
+          <p className="text-gray-600 flex items-center">
+            Allergies: <span className="text-gray-800 ml-1">{patientInfo.allergies || "N/A"}</span>
+          </p>
+          <p className="text-gray-600 flex items-center">
+            Insurance: <span className="text-gray-800 ml-1">{patientInfo.insurance || "N/A"}</span>
+          </p>
+          <p className="text-gray-600 flex items-center">
+            Accessible Doctors: <span className="text-indigo-600 font-bold ml-1">{grantedDoctors.length}</span>
+          </p>
         </div>
         <div className="w-full mt-6 flex justify-center">
           <div className="flex items-center border border-gray-300 rounded-md overflow-hidden max-w-md w-full">
-            <span className="text-gray-400 pl-3"><FiSearch /></span>
-            <input type="text" placeholder="Search doctors" className="w-full p-2 text-gray-700 focus:outline-none bg-white" />
+            <span className="text-gray-400 pl-3">
+              <FiSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Search doctors"
+              className="w-full p-2 text-gray-700 focus:outline-none bg-white"
+            />
           </div>
         </div>
         <nav className="w-full mt-8 space-y-2">
@@ -141,10 +185,18 @@ const AppointmentsPage = () => {
                 <p className="text-gray-800 mb-2">
                   <strong>Doctor:</strong> {appointment.doctorName}
                 </p>
-                <p className="text-gray-800 mb-2"><strong>Reason:</strong> {appointment.reason}</p>
-                <p className={`text-gray-800 font-semibold ${
-                  appointment.status === 1 ? "text-green-600" : appointment.status === 2 ? "text-red-600" : "text-yellow-600"
-                }`}>
+                <p className="text-gray-800 mb-2">
+                  <strong>Reason:</strong> {appointment.reason}
+                </p>
+                <p
+                  className={`text-gray-800 font-semibold ${
+                    appointment.status === 1
+                      ? "text-green-600"
+                      : appointment.status === 2
+                      ? "text-red-600"
+                      : "text-yellow-600"
+                  }`}
+                >
                   Status: {appointment.status === 0 ? "Pending" : appointment.status === 1 ? "Approved" : "Declined"}
                 </p>
               </div>

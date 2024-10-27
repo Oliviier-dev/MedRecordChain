@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiUser, FiClock, FiSearch, FiBarChart2, FiFileText, FiSettings, FiHelpCircle, FiLogOut } from "react-icons/fi";
+import { FiClock, FiFileText, FiHelpCircle, FiLogOut, FiSearch, FiSettings, FiUser } from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -44,7 +44,7 @@ const DoctorAppointmentsPage: React.FC = () => {
           patientName: appointment.patient,
           reason: appointment.reason,
           status: appointment.status,
-        }))
+        })),
       );
     }
     setLoading(false);
@@ -140,8 +140,11 @@ const DoctorAppointmentsPage: React.FC = () => {
         <h2 className="text-2xl font-semibold text-indigo-600 mb-6">Your Appointments</h2>
         {appointments.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {appointments.map((appointment) => (
-              <div key={appointment.appointmentId} className="p-6 border rounded-lg shadow-md bg-white hover:shadow-lg transition">
+            {appointments.map(appointment => (
+              <div
+                key={appointment.appointmentId}
+                className="p-6 border rounded-lg shadow-md bg-white hover:shadow-lg transition"
+              >
                 <p className="text-gray-800 mb-2">
                   <strong>Date:</strong>{" "}
                   {new Date(Number(appointment.dateTime) * 1000).toLocaleDateString("en-US", {
@@ -158,18 +161,21 @@ const DoctorAppointmentsPage: React.FC = () => {
                   })}
                 </p>
                 <p className="text-gray-800 mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    <strong>Patient:</strong> {appointment.patientName}
-                </p>    
+                  <strong>Patient:</strong> {appointment.patientName}
+                </p>
                 <p className="text-gray-800 mb-2">
                   <strong>Reason:</strong> {appointment.reason}
                 </p>
                 <p
                   className={`text-gray-800 font-semibold ${
-                    appointment.status === 1 ? "text-green-600" : appointment.status === 2 ? "text-red-600" : "text-yellow-600"
+                    appointment.status === 1
+                      ? "text-green-600"
+                      : appointment.status === 2
+                      ? "text-red-600"
+                      : "text-yellow-600"
                   }`}
                 >
-                  Status:{" "}
-                  {appointment.status === 0 ? "Pending" : appointment.status === 1 ? "Approved" : "Declined"}
+                  Status: {appointment.status === 0 ? "Pending" : appointment.status === 1 ? "Approved" : "Declined"}
                 </p>
                 {appointment.status === 0 && (
                   <div className="mt-4 flex space-x-4">

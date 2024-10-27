@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface MedicalRecord {
@@ -8,7 +8,20 @@ interface MedicalRecord {
   doctorName: string;
 }
 
-const PatientModal = ({ patient, onClose }) => {
+interface Patient {
+  patientAddress: string;
+  name: string;
+  age: number;
+  phone: string;
+  email: string;
+}
+
+interface PatientModalProps {
+  patient: Patient;
+  onClose: () => void;
+}
+
+const PatientModal: React.FC<PatientModalProps> = ({ patient, onClose }) => {
   const [medicalHistory, setMedicalHistory] = useState<MedicalRecord[]>([]);
   const [personalDetails, setPersonalDetails] = useState({
     allergies: "",
@@ -57,8 +70,7 @@ const PatientModal = ({ patient, onClose }) => {
             <span className="text-gray-700">{patient.name}</span>
           </div>
           <div>
-            <span className="font-medium text-gray-800">Age:</span>{" "}
-            <span className="text-gray-700">{patient.age}</span>
+            <span className="font-medium text-gray-800">Age:</span> <span className="text-gray-700">{patient.age}</span>
           </div>
           <div>
             <span className="font-medium text-gray-800">Phone:</span>{" "}
@@ -83,9 +95,7 @@ const PatientModal = ({ patient, onClose }) => {
         <div className="space-y-4 overflow-y-auto max-h-72">
           {medicalHistory.length > 0 ? (
             medicalHistory
-              .filter(record => 
-                record.recordType || record.description || record.date || record.doctorName
-              )
+              .filter(record => record.recordType || record.description || record.date || record.doctorName)
               .map((record, index) => (
                 <div key={index} className="border p-4 rounded-md bg-gray-50 shadow-sm">
                   <p className="text-gray-800">

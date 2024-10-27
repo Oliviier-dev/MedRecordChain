@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FiUser, FiSettings, FiHelpCircle, FiLogOut, FiClock, FiSearch, FiBarChart2, FiFileText, FiUsers } from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -9,6 +10,7 @@ import AddMedicalRecordModal from "../../components/ui/AddMedicalRecordModal";
 
 const DoctorDashboard: React.FC = () => {
   const { address: doctorAddress } = useAccount();
+  const router = useRouter();
   const [doctorInfo, setDoctorInfo] = useState({
     name: "",
     specialization: "",
@@ -120,15 +122,16 @@ const DoctorDashboard: React.FC = () => {
 
         {/* Navigation Links */}
         <nav className="w-full mt-8 space-y-2">
-          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
-            <span className="mr-2">
-              <FiUsers />
-            </span>
-            Patient List
+          <button
+            className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md"
+            onClick={() => router.push("/doc-appointments")} // Navigate to doc-appointments page
+          >
+            <FiBarChart2 className="mr-2" />
+            Appointments
           </button>
           <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
             <span className="mr-2">
-              <FiBarChart2 />
+            <FiUsers />
             </span>
             Statistics
           </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { FiUser, FiSettings, FiHelpCircle, FiLogOut, FiClock, FiSearch, FiBarChart2, FiFileText, FiUsers } from "react-icons/fi";
@@ -13,6 +14,7 @@ interface MedicalRecord {
 }
 
 const DashboardPage: React.FC = () => {
+  const router = useRouter();
   const { address: userAddress } = useAccount();
   const [isRegistered, setIsRegistered] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState("");
@@ -26,13 +28,16 @@ const DashboardPage: React.FC = () => {
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalRecord[]>([]);
   const [showDoctorsList, setShowDoctorsList] = useState(false);
+  const [appointmentDetails, setAppointmentDetails] = useState({ date: "", reason: "", doctorAddress: "" });
   const [grantedDoctors, setGrantedDoctors] = useState<
     { doctorAddress: string; name: string; specialization: string }[]
   >([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
   const { writeContractAsync: grantAccessAsync } = useScaffoldWriteContract("PatientRegistry");
   const { writeContractAsync: revokeAccessAsync } = useScaffoldWriteContract("PatientRegistry");
+  const { writeContractAsync: bookAppointmentAsync } = useScaffoldWriteContract("AppointmentRegistry");
 
   const { data: registrationStatus } = useScaffoldReadContract({
     contractName: "PatientRegistry",
@@ -127,6 +132,36 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleNavigateToAppointments = () => {
+    router.push('/appointments');
+  };
+
+  const handleBookAppointment = async () => {
+    if (!appointmentDetails.date || !appointmentDetails.reason || !appointmentDetails.doctorAddress) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+  
+    try {
+      // Convert date to Unix timestamp in seconds and then to BigInt
+      const dateTimeUnix = BigInt(Math.floor(new Date(appointmentDetails.date).getTime() / 1000));
+  
+      await bookAppointmentAsync({
+        functionName: "requestAppointment",
+        args: [appointmentDetails.doctorAddress, dateTimeUnix, appointmentDetails.reason],
+      });
+      console.log("Appointment booked successfully!");
+      setErrorMessage(""); // Clear error message
+  
+      // Reset appointment fields
+      setAppointmentDetails({ date: "", reason: "", doctorAddress: "" });
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      setErrorMessage("Failed to book appointment. Please try again.");
+    }
+  };  
+  
+
   if (loading) return <p className="text-center mt-20 text-indigo-600 font-semibold">Loading...</p>;
 
   if (!isRegistered) {
@@ -190,17 +225,20 @@ const DashboardPage: React.FC = () => {
 
         {/* Navigation Links */}
         <nav className="w-full mt-8 space-y-2">
+          <button
+            className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md"
+            onClick={handleNavigateToAppointments} // Navigate to Appointments on click
+          >
+            <span className="mr-2">
+              <FiBarChart2 />
+            </span>
+            Appointments
+          </button>
           <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
             <span className="mr-2">
               <FiUsers />
             </span>
             Doctors List
-          </button>
-          <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
-            <span className="mr-2">
-              <FiBarChart2 />
-            </span>
-            Patient Stats
           </button>
           <button className="w-full flex items-center justify-start p-2 text-gray-700 hover:bg-indigo-50 rounded-md">
             <span className="mr-2">
@@ -265,7 +303,7 @@ const DashboardPage: React.FC = () => {
         </section>
 
         {/* Manage Access */}
-        <section className="bg-white rounded-lg shadow-md p-6">
+        <section className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Manage Access</h2>
           <input
             type="text"
@@ -312,6 +350,39 @@ const DashboardPage: React.FC = () => {
               )}
             </ul>
           )}
+        </section>
+
+        {/* Book Appointment Section */}
+        <section className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Book an Appointment</h2>
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input
+              type="text"
+              placeholder="Doctor's Address"
+              value={appointmentDetails.doctorAddress}
+              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, doctorAddress: e.target.value })}
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
+            />
+            <input
+              type="date"
+              value={appointmentDetails.date}
+              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, date: e.target.value })}
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
+            />
+            <textarea
+              placeholder="Reason for Appointment"
+              value={appointmentDetails.reason}
+              onChange={(e) => setAppointmentDetails({ ...appointmentDetails, reason: e.target.value })}
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md bg-white text-gray-800"
+            ></textarea>
+            <button
+              onClick={handleBookAppointment}
+              className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            >
+              Book Appointment
+            </button>
+          </form>
         </section>
       </main>
     </div>

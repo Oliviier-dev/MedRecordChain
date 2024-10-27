@@ -12,11 +12,17 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
 
   const handleToggle = () => {
     if (isDarkMode) {
-      setTheme("light");
+      setTheme("dark");
       return;
     }
     setTheme("dark");
   };
+
+  useEffect(() => {
+    if (resolvedTheme !== "dark") {
+      setTheme("dark");
+    }
+  }, [resolvedTheme, setTheme]);
 
   useEffect(() => {
     setMounted(true);

@@ -54,8 +54,8 @@ contract PatientRegistry {
         string email;
     }
 
-    mapping(address => Patient) private patients;
-    mapping(address => Doctor) private doctors;
+    mapping(address => Patient) public patients;
+    mapping(address => Doctor) public doctors;
     mapping(address => mapping(address => bool)) private doctorPermissions;
     mapping(address => address[]) private grantedDoctors;
     mapping(address => address[]) private accessiblePatients;

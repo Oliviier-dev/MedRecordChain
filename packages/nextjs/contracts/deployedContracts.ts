@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AppointmentRegistry: {
-      address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           anonymous: false,
@@ -344,7 +344,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     PatientRegistry: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
         {
           anonymous: false,
@@ -533,6 +533,35 @@ const deployedContracts = {
           name: "completeRegistration",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "doctors",
+          outputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "specialization",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -828,6 +857,77 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "patients",
+          outputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "age",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "phone",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "email",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "medicalHistorySize",
+              type: "uint256",
+            },
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "allergies",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "insurance",
+                  type: "string",
+                },
+              ],
+              internalType: "struct PatientRegistry.PersonalHealthDetails",
+              name: "personalDetails",
+              type: "tuple",
+            },
+            {
+              internalType: "string",
+              name: "allergies",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "insurance",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "string",
               name: "_name",
               type: "string",
@@ -888,7 +988,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     YourContract: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       abi: [
         {
           inputs: [

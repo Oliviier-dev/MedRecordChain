@@ -1,82 +1,82 @@
-# 🏗 Scaffold-ETH 2
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+# MedRecordChain
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+MedRecordChain is a decentralized platform for managing patient medical records and appointments using blockchain technology. It allows patients to securely store their health data on the blockchain and grants permission-based access to doctors. Built on [Scaffold-ETH](https://github.com/scaffold-eth/scaffold-eth-2), this project ensures transparency and patient control over sensitive medical information.
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+## ✨ Features
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+- **Decentralized Storage**: Patients can store their medical records securely on the blockchain, ensuring data integrity and privacy.
+- **Permission-Based Access**: Only doctors granted explicit permission by a patient can access or add to that patient's medical records.
+- **Appointment Booking System**: Patients can book appointments, and doctors have the option to approve or decline each request.
+- **Transparent Record of Access**: Patients have a transparent view of who has access to their data and can revoke access as needed.
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+## 🛠 Tech Stack
 
-## Requirements
+- **Frontend**: React, Next.js, TypeScript
+- **Backend**: Solidity smart contracts deployed on Ethereum
+- **Blockchain Framework**: Scaffold-ETH for development and deployment
+- **Wallet Integration**: MetaMask, WalletConnect via `wagmi`
 
-Before you begin, you need to install the following tools:
+## 🚀 Getting Started
 
-- [Node (>= v18.18)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### Prerequisites
 
-## Quickstart
+- [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/)
+- [MetaMask](https://metamask.io/) or any Web3 wallet
+- [Vercel CLI](https://vercel.com/docs/cli) (for deployment)
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### Installation
 
-1. Clone this repo & install dependencies
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/medrecordchain.git
+   cd medrecordchain
+   ```
+2. **Install Dependencies**:
+   ```bash
+   yarn install
+   ```
+3. **Start Scaffold-ETH**:
+   ```bash
+   yarn chain
+   yarn deploy
+   ```
+4. **Run the Development Server**:
+   ```bash
+   yarn dev
+   ```
+  
+## 🎯 Usage
 
-```
-git clone https://github.com/scaffold-eth/scaffold-eth-2.git
-cd scaffold-eth-2
-yarn install
-```
+### For Patients
 
-2. Run a local network in the first terminal:
+- **Register**: Patients can register their basic information on the platform.
+- **Grant Access**: Patients can grant permission to specific doctors to access their medical records.
+- **Book Appointments**: Patients can book appointments with doctors who are registered on the platform.
+- **Revoke Access**: Patients can revoke previously granted access to their medical records.
+- **View Medical Records**: Patients can view a history of their medical records.
 
-```
-yarn chain
-```
+### For Doctors
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
+- **Register**: Doctors can register their profile and specialization on the platform.
+- **View Patient Data**: With patient-granted permission, doctors can view the patient's medical history.
+- **Add Medical Records**: Doctors with access can add new medical records for the patient.
+- **Approve Appointments**: Doctors can view and approve or decline appointment requests from patients.
 
-3. On a second terminal, deploy the test contract:
+## 📜 Smart Contracts
 
-```
-yarn deploy
-```
+MedRecordChain is built with Solidity smart contracts, handling the core functionality of record management and appointment booking:
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
+- **PatientRegistry**: Manages patient data and permissions.
+- **DoctorRegistry**: Handles doctor registration and access control.
+- **AppointmentRegistry**: Manages appointment bookings and approvals.
 
-4. On a third terminal, start your NextJS app:
+## 🤝 Contributing
 
-```
-yarn start
-```
+Contributions are welcome! Feel free to fork the repo and create a pull request. Make sure to test any changes thoroughly before submitting.
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
-
-**What's next**:
-
-- Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
-- Edit your smart contract test in: `packages/hardhat/test`. To run test use `yarn hardhat:test`
-- You can add your Alchemy API Key in `scaffold.config.ts` if you want more reliability in your RPC requests.
-
-## Documentation
-
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
-
-To know more about its features, check out our [website](https://scaffoldeth.io).
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+1.  **Fork the Repository**
+2.  **Create a Branch** (`git checkout -b feature/your-feature`)
+3.  **Commit Changes** (`git commit -m 'Add new feature'`)
+4.  **Push to Branch** (`git push origin feature/your-feature`)
+5.  **Open a Pull Request**

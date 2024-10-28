@@ -5,28 +5,13 @@ import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 export const SwitchTheme = ({ className }: { className?: string }) => {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
-  const isDarkMode = resolvedTheme === "dark";
-
-  const handleToggle = () => {
-    if (isDarkMode) {
-      setTheme("dark");
-      return;
-    }
-    setTheme("dark");
-  };
-
-  useEffect(() => {
-    if (resolvedTheme !== "dark") {
-      setTheme("dark");
-    }
-  }, [resolvedTheme, setTheme]);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setTheme("dark");
+  }, [setTheme]);
 
   if (!mounted) return null;
 
@@ -36,10 +21,13 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
         id="theme-toggle"
         type="checkbox"
         className="toggle toggle-primary bg-primary hover:bg-primary border-primary"
-        onChange={handleToggle}
-        checked={isDarkMode}
+        onChange={() => {
+          return;
+        }}
+        checked={true}
+        readOnly
       />
-      <label htmlFor="theme-toggle" className={`swap swap-rotate ${!isDarkMode ? "swap-active" : ""}`}>
+      <label htmlFor="theme-toggle" className="swap swap-rotate">
         <SunIcon className="swap-on h-5 w-5" />
         <MoonIcon className="swap-off h-5 w-5" />
       </label>

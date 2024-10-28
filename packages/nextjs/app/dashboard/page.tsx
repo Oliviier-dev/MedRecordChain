@@ -49,7 +49,7 @@ const DashboardPage: React.FC = () => {
   const { writeContractAsync: revokeAccessAsync } = useScaffoldWriteContract("PatientRegistry");
   const { writeContractAsync: bookAppointmentAsync } = useScaffoldWriteContract("AppointmentRegistry");
 
-  const { data: registrationStatus } = useScaffoldReadContract({
+  const { data: registrationStatus, refetch: refetchRegistrationStatus } = useScaffoldReadContract({
     contractName: "PatientRegistry",
     functionName: "isPatientRegistered",
     args: [userAddress],
@@ -111,6 +111,11 @@ const DashboardPage: React.FC = () => {
     }
     setLoading(false);
   }, [registrationStatus, patientData, personalHealthDetails, historyData, grantedDoctorsData]);
+
+  useEffect(() => {
+    // Call refetchRegistrationStatus on mount to ensure status is up to date
+    refetchRegistrationStatus();
+  }, []);
 
   const handleGrantAccess = async () => {
     if (!doctorAddress) {

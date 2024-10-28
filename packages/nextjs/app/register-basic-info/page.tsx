@@ -14,6 +14,7 @@ const RegisterBasicInfoPage: React.FC = () => {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const { writeContractAsync: registerPatientAsync } = useScaffoldWriteContract("PatientRegistry");
+  const [loading, setLoading] = useState(false);
 
   const handleNext = async () => {
     // Check if all required fields are filled
@@ -25,11 +26,15 @@ const RegisterBasicInfoPage: React.FC = () => {
     try {
       // Clear any previous error message
       setErrorMessage("");
+      setLoading(true);
+
+      // Convert date to BigInt and handle format
+      const dobBigInt = BigInt(new Date(basicInfo.dob).getTime());
 
       // Call the smart contract function
       await registerPatientAsync({
         functionName: "registerPatient",
-        args: [basicInfo.name, BigInt(new Date(basicInfo.dob).getTime()), basicInfo.phone, basicInfo.email],
+        args: [basicInfo.name, dobBigInt, basicInfo.phone, basicInfo.email],
       });
 
       console.log("Basic info registered!");
@@ -37,6 +42,8 @@ const RegisterBasicInfoPage: React.FC = () => {
     } catch (e) {
       console.error("Error during registration:", e);
       setErrorMessage("An error occurred during registration. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -117,9 +124,12 @@ const RegisterBasicInfoPage: React.FC = () => {
             <button
               type="button"
               onClick={handleNext}
-              className="w-full py-3 mt-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700"
+              className={`w-full py-3 mt-4 text-white font-medium rounded-md ${
+                loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+              disabled={loading}
             >
-              Next
+              {loading ? "Processing..." : "Next"}
             </button>
           </form>
         </div>

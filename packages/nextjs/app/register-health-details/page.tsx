@@ -11,17 +11,32 @@ const RegisterHealthDetailsPage: React.FC = () => {
     insurance: "",
   });
   const { writeContractAsync: completeRegistrationAsync } = useScaffoldWriteContract("PatientRegistry");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCompleteRegistration = async () => {
+    if (!healthDetails.allergies) {
+      setErrorMessage("Please provide information on any allergies.");
+      return;
+    }
+
     try {
+      setLoading(true);
+      setErrorMessage("");
+
+      // Call the smart contract function to complete registration
       await completeRegistrationAsync({
         functionName: "completeRegistration",
         args: [healthDetails.allergies, healthDetails.insurance],
       });
+
       console.log("Health details updated!");
-      router.push("/dashboard");
+      router.push("/dashboard"); // Navigate to the patient dashboard
     } catch (e) {
       console.error("Error updating health details:", e);
+      setErrorMessage("An error occurred while updating health details. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,12 +86,16 @@ const RegisterHealthDetailsPage: React.FC = () => {
                 placeholder="Insurance provider or policy number"
               />
             </div>
+            {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
             <button
               type="button"
               onClick={handleCompleteRegistration}
-              className="w-full py-3 mt-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700"
+              className={`w-full py-3 mt-4 font-medium rounded-md transition-colors ${
+                loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+              disabled={loading}
             >
-              Complete Registration
+              {loading ? "Updating..." : "Complete Registration"}
             </button>
           </form>
         </div>

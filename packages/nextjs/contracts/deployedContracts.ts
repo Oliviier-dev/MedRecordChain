@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AppointmentRegistry: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
         {
           anonymous: false,
@@ -344,7 +344,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     PatientRegistry: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       abi: [
         {
           anonymous: false,
@@ -988,7 +988,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     YourContract: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
@@ -1132,8 +1132,345 @@ const deployedContracts = {
     },
   },
   421614: {
+    AppointmentRegistry: {
+      address: "0x5C933Ec7DFe088179b68362df93D5Cf5d7dd3414",
+      abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "appointmentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+          ],
+          name: "AppointmentApproved",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "appointmentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+          ],
+          name: "AppointmentDeclined",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "appointmentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "patient",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "date",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "reason",
+              type: "string",
+            },
+          ],
+          name: "AppointmentRequested",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "appointments",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "patient",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "date",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "reason",
+              type: "string",
+            },
+            {
+              internalType: "enum AppointmentRegistry.AppointmentStatus",
+              name: "status",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "appointmentId",
+              type: "uint256",
+            },
+          ],
+          name: "approveAppointment",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "appointmentId",
+              type: "uint256",
+            },
+          ],
+          name: "declineAppointment",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "doctorAppointments",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+          ],
+          name: "getDoctorAppointments",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint256",
+                  name: "id",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "patient",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
+                  name: "doctor",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "date",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "reason",
+                  type: "string",
+                },
+                {
+                  internalType: "enum AppointmentRegistry.AppointmentStatus",
+                  name: "status",
+                  type: "uint8",
+                },
+              ],
+              internalType: "struct AppointmentRegistry.Appointment[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "patient",
+              type: "address",
+            },
+          ],
+          name: "getPatientAppointments",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint256",
+                  name: "id",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "patient",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
+                  name: "doctor",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "date",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "reason",
+                  type: "string",
+                },
+                {
+                  internalType: "enum AppointmentRegistry.AppointmentStatus",
+                  name: "status",
+                  type: "uint8",
+                },
+              ],
+              internalType: "struct AppointmentRegistry.Appointment[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "nextAppointmentId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "patientAppointments",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "doctor",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "date",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "reason",
+              type: "string",
+            },
+          ],
+          name: "requestAppointment",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+    },
     PatientRegistry: {
-      address: "0xeA2Ca8D0BAf4Ff881bBD2b906a8bb8f0805F2E85",
+      address: "0x1f9eDf583c35099d76b3859F8676976c3D240181",
       abi: [
         {
           anonymous: false,
@@ -1235,6 +1572,12 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "string",
+              name: "recordType",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
               name: "description",
               type: "string",
             },
@@ -1270,8 +1613,28 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "patientAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "_recordType",
+              type: "string",
+            },
+            {
               internalType: "string",
               name: "_description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_date",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_doctorName",
               type: "string",
             },
           ],
@@ -1283,14 +1646,48 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string[]",
-              name: "_medicalHistory",
-              type: "string[]",
+              internalType: "string",
+              name: "_allergies",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_insurance",
+              type: "string",
             },
           ],
           name: "completeRegistration",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "doctors",
+          outputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "specialization",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -1411,7 +1808,22 @@ const deployedContracts = {
           outputs: [
             {
               internalType: "string[]",
-              name: "",
+              name: "recordTypes",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "descriptions",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "dates",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "doctorNames",
               type: "string[]",
             },
           ],
@@ -1430,22 +1842,22 @@ const deployedContracts = {
           outputs: [
             {
               internalType: "string",
-              name: "",
+              name: "name",
               type: "string",
             },
             {
               internalType: "uint256",
-              name: "",
+              name: "age",
               type: "uint256",
             },
             {
               internalType: "string",
-              name: "",
+              name: "phone",
               type: "string",
             },
             {
               internalType: "string",
-              name: "",
+              name: "email",
               type: "string",
             },
           ],
@@ -1463,9 +1875,55 @@ const deployedContracts = {
           name: "getPatientMedicalHistory",
           outputs: [
             {
-              internalType: "string[]",
+              components: [
+                {
+                  internalType: "string",
+                  name: "recordType",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "description",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "date",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "doctorName",
+                  type: "string",
+                },
+              ],
+              internalType: "struct PatientRegistry.MedicalRecordData[]",
               name: "",
-              type: "string[]",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "patientAddress",
+              type: "address",
+            },
+          ],
+          name: "getPersonalHealthDetails",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
             },
           ],
           stateMutability: "view",
@@ -1516,6 +1974,77 @@ const deployedContracts = {
             {
               internalType: "bool",
               name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "patients",
+          outputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "age",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "phone",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "email",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "medicalHistorySize",
+              type: "uint256",
+            },
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "allergies",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "insurance",
+                  type: "string",
+                },
+              ],
+              internalType: "struct PatientRegistry.PersonalHealthDetails",
+              name: "personalDetails",
+              type: "tuple",
+            },
+            {
+              internalType: "string",
+              name: "allergies",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "insurance",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isRegistered",
               type: "bool",
             },
           ],
